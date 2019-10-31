@@ -52,7 +52,7 @@ needs_install() {
 build() {
     rm -rf "./$1/src" "./$1/pkg"
     rm -f "./$1/"*.pkg.tar.xz "./$1/"*.pkg.tar.xz.sig
-    (cd "./$1" && shift && makepkg -s -C --noconfirm "$@") || exit $?
+    (cd "./$1" && shift && export SRCDEST="/tmp/" && makepkg -s -C --noconfirm "$@") || exit $?
 }
 
 # Run an install command for a package which may conflict with a base package
@@ -100,7 +100,7 @@ install_python_ipy() {
     then
         return 0
     fi
-    MAKEPKGDIR="$(mktemp -d makepkg-python-ipy-XXXXXX)"
+    MAKEPKGDIR="$(mktemp -d /tmp/makepkg-python-ipy-XXXXXX)"
     git -C "$MAKEPKGDIR" clone https://aur.archlinux.org/python-ipy.git || exit $?
     (cd "$MAKEPKGDIR/python-ipy" && makepkg -si --noconfirm --asdeps) || exit $?
     rm -rf "$MAKEPKGDIR"
@@ -113,7 +113,7 @@ install_libreport() {
     then
         return 0
     fi
-    MAKEPKGDIR="$(mktemp -d makepkg-libreport-XXXXXX)"
+    MAKEPKGDIR="$(mktemp -d /tmp/makepkg-libreport-XXXXXX)"
     git -C "$MAKEPKGDIR" clone https://aur.archlinux.org/rpm-org.git || exit $?
     (cd "$MAKEPKGDIR/rpm-org" && makepkg -si --noconfirm --asdeps) || exit $?
     git -C "$MAKEPKGDIR" clone https://aur.archlinux.org/satyr.git || exit $?
