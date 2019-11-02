@@ -35,5 +35,8 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, path: "step2_relabel.sh"
     # Reboot in a clean environment
     machine.vm.provision :reload
+    #
+    machine.vm.provision :shell, path: "step3_nr.sh"
   end
+  config.vm.network "forwarded_port", guest: 80, host: 8080
 end

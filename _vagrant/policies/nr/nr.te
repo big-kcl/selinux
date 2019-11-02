@@ -1,0 +1,9 @@
+policy_module(nr, 1.0)
+gen_require(`
+   type sysadm_t;
+')
+type nr_t;
+fs_associate(nr_t)
+allow sysadm_t nr_t:{ dir file } relabelto;
+allow sysadm_t nr_t:dir { ioctl read append create getattr setattr lock unlink link rename add_name remove_name reparent search rmdir open };
+allow sysadm_t nr_t:file { ioctl read append create getattr setattr lock append unlink link rename open };
