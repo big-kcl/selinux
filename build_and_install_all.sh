@@ -52,7 +52,7 @@ needs_install() {
 build() {
     rm -rf "./$1/src" "./$1/pkg"
     rm -f "./$1/"*.pkg.tar.xz "./$1/"*.pkg.tar.xz.sig
-    (cd "./$1" && shift && export SRCDEST="/tmp/" && makepkg -s -C --noconfirm "$@") || exit $?
+    (cd "./$1" && shift && export SRCDEST="/tmp/" && makepkg -s -C --noconfirm --nocheck "$@") || exit $?
 }
 
 # Run an install command for a package which may conflict with a base package
@@ -102,11 +102,11 @@ install_libreport() {
     fi
     MAKEPKGDIR="$(mktemp -d -p "${TMPDIR:-/tmp}" makepkg-libreport-XXXXXX)"
     git -C "$MAKEPKGDIR" clone https://aur.archlinux.org/rpm-org.git || exit $?
-    (cd "$MAKEPKGDIR/rpm-org" && makepkg -si --noconfirm --asdeps) || exit $?
+    (cd "$MAKEPKGDIR/rpm-org" && makepkg -si --noconfirm --nocheck --asdeps) || exit $?
     git -C "$MAKEPKGDIR" clone https://aur.archlinux.org/satyr.git || exit $?
-    (cd "$MAKEPKGDIR/satyr" && makepkg -si --noconfirm --asdeps) || exit $?
+    (cd "$MAKEPKGDIR/satyr" && makepkg -si --noconfirm --nocheck --asdeps) || exit $?
     git -C "$MAKEPKGDIR" clone https://aur.archlinux.org/libreport.git || exit $?
-    (cd "$MAKEPKGDIR/libreport" && makepkg -si --noconfirm --asdeps) || exit $?
+    (cd "$MAKEPKGDIR/libreport" && makepkg -si --noconfirm --nocheck --asdeps) || exit $?
     rm -rf "$MAKEPKGDIR"
 }
 
