@@ -19,10 +19,37 @@ timedatectl set-timezone UTC || true
 # Configure the base system and update it
 # shellcheck disable=SC2016
 sed -i -e 's/^#\?MAKEFLAGS=.*/MAKEFLAGS="-j\$(nproc)"/' /etc/makepkg.conf
+pacman --noconfirm -Sy archlinux-keyring
 pacman --noconfirm -Syu
 
+# Ensure that the required build dependencies are installed
+for PKG_COMMAND in \
+    autoconf:autoconf \
+    automake:automake \
+    binutils:strip \
+    bison:bison \
+    fakeroot:fakeroot \
+    file:file \
+    findutils:xargs \
+    flex:flex \
+    gcc:gcc \
+    gettext:msgfmt \
+    make:make \
+    man:man \
+    patch:patch \
+    pkgconf:pkg-config \
+    sed:sed \
+    texinfo:makeinfo \
+    which:which
+do
+    if ! command -v "${PKG_COMMAND##*:}" > /dev/null 2>&1
+    then
+        pacman --noconfirm -S "${PKG_COMMAND%:*}"
+    fi
+done
+
 # Install haveged in order to speed up the launch of SSH server
-if ! pacman -Qi haveged > /dev/null 2>&1
+if ! [ -e /usr/bin/haveged ]
 then
     pacman --noconfirm -S haveged
     systemctl start haveged.service
@@ -32,6 +59,7 @@ fi
 # Build and install SELinux packages
 sudo -su vagrant /srv/arch-selinux/recv_gpg_keys.sh
 sudo -su vagrant /srv/arch-selinux/clean.sh
+sudo -su vagrant rm -rf /home/vagrant/.tmp/build
 sudo -su vagrant mkdir -p /home/vagrant/.tmp/build
 sudo -su vagrant BUILDDIR=/home/vagrant/.tmp/build /srv/arch-selinux/build_and_install_all.sh -g
 rm -rf /home/vagrant/.tmp/build
