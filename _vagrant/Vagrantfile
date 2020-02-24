@@ -26,6 +26,9 @@ Vagrant.configure(2) do |config|
       v.memory = 2048
     end
 
+    # Add bridge details:
+    machine.vm.network "public_network", bridge: "wlp2s0"
+
     # Do not use a shared folder for packages, as VirtualBox shared folders
     # cause issues when using "install" files.
     machine.vm.synced_folder "..", "/srv/arch-selinux", type: "rsync",
@@ -41,5 +44,6 @@ Vagrant.configure(2) do |config|
     #
     machine.vm.provision :shell, path: "step3_nr.sh"
   end
-  config.vm.network "forwarded_port", guest: 80, host: 8080
+  #config.vm.network "forwarded_port", guest: 80, host: 8888
+
 end
